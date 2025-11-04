@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quality Pictionary – Clue Viewer</title>
+<style>
+  :root { --accent:#111827; --bg:#ffffff; --muted:#e5e7eb; --text:#111827; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); }
+  header { padding: 12px 16px; border-bottom: 1px solid var(--muted); display:flex; align-items:center; justify-content:space-between; }
+  header .title { font-weight:700; }
+  .container { max-width: 920px; margin: 0 auto; padding: 16px; }
+  .card { border:1px solid var(--muted); border-radius:16px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .controls { display:flex; gap:8px; flex-wrap: wrap; margin: 8px 0 16px; }
+  button { border:1px solid var(--muted); background:white; padding:10px 14px; border-radius:12px; cursor: pointer; font-weight:600; }
+  button:disabled { opacity: .5; cursor:not-allowed; }
+  .img-wrap { display:flex; align-items:center; justify-content:center; aspect-ratio: 1/1; width: 100%; background:#f9fafb; border:1px dashed #d1d5db; border-radius:12px; overflow:hidden; }
+  .img-wrap img { max-width:100%; max-height:100%; object-fit:contain; }
+  .progress { height:10px; background:#f3f4f6; border-radius:999px; overflow:hidden; margin-top:12px; }
+  .bar { height:100%; width:0%; background:linear-gradient(90deg, #111827, #6b7280); transition:width .2s ease; }
+  .meta { display:flex; justify-content:space-between; align-items:center; font-size:14px; color:#374151; margin-top:8px; }
+  .footer { margin-top:16px; display:flex; gap:8px; flex-wrap:wrap; }
+  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; border:1px solid #d1d5db; padding:2px 6px; border-radius:6px; background:#fff; }
+  .pill { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; background:#f3f4f6; border-radius:999px; }
+  .notice { font-size:13px; color:#6b7280; }
+</style>
+<script defer src="config/config.js"></script>
+</head>
+<body>
+  <header>
+    <div class="title">Quality Pictionary – Clue Viewer</div>
+    <div class="pill">
+      Set: <strong id="setLabel">?</strong>
+      <span class="notice">Use <span class="kbd">?set=A</span> (or B/C)</span>
+    </div>
+  </header>
+  <div class="container">
+    <div class="card">
+      <div class="controls">
+        <button id="prevBtn" aria-label="Previous clue">← Prev</button>
+        <button id="nextBtn" aria-label="Next clue">Next →</button>
+        <button id="restartBtn" aria-label="Restart timer">Restart ⟳</button>
+        <button id="pauseBtn" aria-label="Pause timer">Pause ⏸</button>
+      </div>
+      <div class="img-wrap">
+        <img id="clueImg" alt="Clue image" src="" />
+      </div>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div class="meta">
+        <div>Clue <span id="idx">1</span> / <span id="total">?</span></div>
+        <div>Time: <span id="time">00:00</span></div>
+      </div>
+      <div class="footer">
+        <button id="answerKeyBtn">Open Answer Key (QR)</button>
+        <div class="notice">Only open after your game ends.</div>
+      </div>
+    </div>
+  </div>
+<script>
+(function(){
+  const params = new URLSearchParams(location.search);
+  const set = (params.get('set') || 'A').toUpperCase();
+  const cfg = window.QP_CONFIG || {};
+  const sets = (cfg.sets||{});
+  const clues = sets[set] || [];
+  const perClue = (cfg.perClueSeconds || 45);
+  const setLabel = document.getElementById('setLabel');
+  const totalLabel = document.getElementById('total');
+  const idxLabel = document.getElementById('idx');
+  const timeLabel = document.getElementById('time');
+  const img = document.getElementById('clueImg');
+  const bar = document.getElementById('bar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const answerKeyBtn = document.getElementById('answerKeyBtn');
+
+  document.title = `QP – Set ${set}`;
+  setLabel.textContent = set;
+  totalLabel.textContent = clues.length;
+
+  let i = 0;
+  let seconds = perClue;
+  let timer = null;
+  let paused = false;
+
+  function fmt(n){ n = Math.max(0,n); const m = Math.floor(n/60); const s = n%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+  function updateBar(){ const pct = (seconds / perClue) * 100; bar.style.width = `${pct}%`; timeLabel.textContent = fmt(seconds); }
+  function loadClue(){
+    img.src = clues[i] || '';
+    idxLabel.textContent = (i+1);
+    seconds = perClue;
+    paused = false;
+    updateBar();
+    runTimer();
+    prevBtn.disabled = (i===0);
+    nextBtn.disabled = (i===clues.length-1);
+  }
+  function runTimer(){
+    clearInterval(timer);
+    timer = setInterval(() => {
+      if(paused) return;
+      seconds--;
+      updateBar();
+      if(seconds <= 0) { clearInterval(timer); }
+    }, 1000);
+  }
+  prevBtn.addEventListener('click', ()=>{ if(i>0){ i--; loadClue(); } });
+  nextBtn.addEventListener('click', ()=>{ if(i<clues.length-1){ i++; loadClue(); } });
+  restartBtn.addEventListener('click', ()=>{ seconds = perClue; paused=false; updateBar(); runTimer(); });
+  pauseBtn.addEventListener('click', ()=>{ paused = !paused; pauseBtn.textContent = paused ? 'Resume ▶' : 'Pause ⏸'; });
+
+  answerKeyBtn.addEventListener('click', ()=>{
+    const base = (cfg.baseUrl || location.origin + location.pathname.replace(/index\.html$/,''));
+    const url = `${base}/answers.html?set=${encodeURIComponent(set)}`;
+    // display QR in new tab or navigate
+    window.open(url, '_blank');
+  });
+
+  if(clues.length === 0){
+    document.querySelector('.container').innerHTML = `<div class="card"><h2>No clues found for set "${set}".</h2><p>Add images and update <code>config/config.js</code> if needed. Try <strong>?set=A</strong>, <strong>?set=B</strong>, or <strong>?set=C</strong>.</p></div>`;
+    return;
+  }
+
+  loadClue();
+})();
+</script>
+</body>
+</html>
