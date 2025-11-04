@@ -6,19 +6,43 @@
     <title>Quality Pictionary – Clue Viewer</title>
     <style>
       :root {
+        /* Original variables */
         --accent: #111827;
         --bg: #ffffff;
         --muted: #e5e7eb;
         --text: #111827;
+
+        /* Merged variables from working CSS */
+        --lightgray: #efefef;
+        --slategray: #778899;
+        --lightblue: #bdd7ee;
+        --blue: #0197f6;
+        --darkblue: #0269a9;
+        --red: #e15634;
+        --darkred: #bf4628;
+        --white: rgb(250, 250, 250);
+        --black: rgba(10, 10, 10, 0.8);
+        --darkgreen: #379d6a;
+        --lightgreen: rgba(72, 191, 132, 0.3);
+        --orange: #ffa500;
+        --yellow: #ffe900;
+        --silver: #c8c8c8;
+        --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
+        --burgundy: #811336; /* Added Moog burgundy from working CSS */
       }
       * {
         box-sizing: border-box;
       }
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
         background: var(--bg);
         color: var(--text);
+        left: 0;
+        margin-left: auto;
+        margin-right: auto;
       }
       header {
         padding: 12px 16px;
@@ -29,9 +53,10 @@
       }
       header .title {
         font-weight: 700;
+        color: var(--burgundy);
       }
       .container {
-        max-width: 920px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 16px;
       }
@@ -39,7 +64,8 @@
         border: 1px solid var(--muted);
         border-radius: 16px;
         padding: 16px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        background-color: white;
       }
       .controls {
         display: flex;
@@ -48,16 +74,26 @@
         margin: 8px 0 16px;
       }
       button {
-        border: 1px solid var(--muted);
-        background: white;
+        background-color: var(--burgundy);
+        color: white;
         padding: 10px 14px;
         border-radius: 12px;
         cursor: pointer;
         font-weight: 600;
+        border: none;
+        transition: background-color 0.3s ease;
+      }
+      button:hover:not(:disabled) {
+        background-color: #590824;
       }
       button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        background-color: #bfa0b0;
+      }
+      #answerKeyBtn {
+        background-color: var(--burgundy);
+        color: white;
       }
       .img-wrap {
         display: flex;
@@ -85,7 +121,7 @@
       .bar {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #111827, #6b7280);
+        background: linear-gradient(90deg, var(--burgundy), #a9546b);
         transition: width 0.2s ease;
       }
       .meta {
@@ -120,6 +156,37 @@
       .notice {
         font-size: 13px;
         color: #6b7280;
+      }
+
+      /* Media query for print - from working CSS */
+      @media print {
+        .pagebreak {
+          clear: both;
+        }
+        body * {
+          visibility: visible;
+        }
+        .ms-rtestate-field * {
+          visibility: visible;
+        }
+        .ms-rtestate-field {
+          position: absolute;
+        }
+        .ms-webpartPage-root {
+          border-spacing: 5px;
+        }
+        table {
+          page-break-inside: auto;
+        }
+        tr {
+          position: relative;
+          break-inside: avoid !important;
+          break-after: auto !important;
+        }
+        .no-print,
+        .no-print * {
+          display: none !important;
+        }
       }
     </style>
     <script src="config/config.js"></script>
@@ -173,16 +240,13 @@
         const restartBtn = document.getElementById("restartBtn");
         const pauseBtn = document.getElementById("pauseBtn");
         const answerKeyBtn = document.getElementById("answerKeyBtn");
-
         document.title = `QP – Set ${set}`;
         setLabel.textContent = set;
         totalLabel.textContent = clues.length;
-
         let i = 0;
         let seconds = perClue;
         let timer = null;
         let paused = false;
-
         function fmt(n) {
           n = Math.max(0, n);
           const m = Math.floor(n / 60);
@@ -237,7 +301,6 @@
           paused = !paused;
           pauseBtn.textContent = paused ? "Resume ▶" : "Pause ⏸";
         });
-
         answerKeyBtn.addEventListener("click", () => {
           const base =
             cfg.baseUrl ||
@@ -246,14 +309,12 @@
           // display QR in new tab or navigate
           window.open(url, "_blank");
         });
-
         if (clues.length === 0) {
           document.querySelector(
             ".container"
           ).innerHTML = `<div class="card"><h2>No clues found for set "${set}".</h2><p>Add images and update <code>config/config.js</code> if needed. Try <strong>?set=A</strong>, <strong>?set=B</strong>, or <strong>?set=C</strong>.</p></div>`;
           return;
         }
-
         loadClue();
       })();
     </script>
