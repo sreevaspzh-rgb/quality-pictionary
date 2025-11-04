@@ -1,7 +1,7 @@
 window.QP_CONFIG = {
-  "baseUrl": "https://your-domain.com/quality-pictionary",
-  "sets": {
-    "A": [
+  baseUrl: "https://sreevaspzh-rgb.github.io/quality-pictionary",
+  sets: {
+    A: [
       "assets/sets/A/01.png",
       "assets/sets/A/02.png",
       "assets/sets/A/03.png",
@@ -21,9 +21,9 @@ window.QP_CONFIG = {
       "assets/sets/A/17.png",
       "assets/sets/A/18.png",
       "assets/sets/A/19.png",
-      "assets/sets/A/20.png"
+      "assets/sets/A/20.png",
     ],
-    "B": [
+    B: [
       "assets/sets/B/01.png",
       "assets/sets/B/02.png",
       "assets/sets/B/03.png",
@@ -43,9 +43,9 @@ window.QP_CONFIG = {
       "assets/sets/B/17.png",
       "assets/sets/B/18.png",
       "assets/sets/B/19.png",
-      "assets/sets/B/20.png"
+      "assets/sets/B/20.png",
     ],
-    "C": [
+    C: [
       "assets/sets/C/01.png",
       "assets/sets/C/02.png",
       "assets/sets/C/03.png",
@@ -65,11 +65,11 @@ window.QP_CONFIG = {
       "assets/sets/C/17.png",
       "assets/sets/C/18.png",
       "assets/sets/C/19.png",
-      "assets/sets/C/20.png"
-    ]
+      "assets/sets/C/20.png",
+    ],
   },
-  "answers": {
-    "A": [
+  answers: {
+    A: [
       "Answer A01",
       "Answer A02",
       "Answer A03",
@@ -89,9 +89,9 @@ window.QP_CONFIG = {
       "Answer A17",
       "Answer A18",
       "Answer A19",
-      "Answer A20"
+      "Answer A20",
     ],
-    "B": [
+    B: [
       "Answer B01",
       "Answer B02",
       "Answer B03",
@@ -111,9 +111,9 @@ window.QP_CONFIG = {
       "Answer B17",
       "Answer B18",
       "Answer B19",
-      "Answer B20"
+      "Answer B20",
     ],
-    "C": [
+    C: [
       "Answer C01",
       "Answer C02",
       "Answer C03",
@@ -133,10 +133,10 @@ window.QP_CONFIG = {
       "Answer C17",
       "Answer C18",
       "Answer C19",
-      "Answer C20"
-    ]
+      "Answer C20",
+    ],
   },
-  "perClueSeconds": 45,
-  "requirePasscode": true,
-  "passcode": "QUALITY"
+  perClueSeconds: 45,
+  requirePasscode: true,
+  passcode: "QUALITY",
 };
