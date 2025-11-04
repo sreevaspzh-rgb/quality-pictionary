@@ -2,7 +2,7 @@ window.QP_CONFIG = {
   baseUrl: "https://sreevaspzh-rgb.github.io/quality-pictionary",
   sets: {
     A: [
-      "assets/sets/A/01.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Example.jpg/240px-Example.jpg",
       "assets/sets/A/02.png",
       "assets/sets/A/03.png",
       "assets/sets/A/04.png",
